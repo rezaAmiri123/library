@@ -3,6 +3,7 @@ package accounts
 import (
 	"errors"
 	"github.com/jinzhu/gorm"
+	"github.com/rezaAmiri123/library/conf"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -34,4 +35,9 @@ func (u *User) CheckPassword(password string) error {
 	bytePassword := []byte(password)
 	byteHashedPassword := []byte(u.Password)
 	return bcrypt.CompareHashAndPassword(byteHashedPassword, bytePassword)
+}
+
+func (u *User) Update(data interface{}) error {
+	db := conf.GetDB()
+	return db.Model(u).Update(data).Error
 }
