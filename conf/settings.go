@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/rezaAmiri123/library/apps/accounts"
 	"log"
 	"os"
 )
@@ -15,9 +14,6 @@ type Database struct {
 	*gorm.DB
 }
 
-func RegisterApps(db *gorm.DB){
-	accounts.AutoMigrate(db)
-}
 // Opening a database and save the reference to `Database` struct.
 func InitDatabase() *gorm.DB {
 	DBULR := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
@@ -32,7 +28,6 @@ func InitDatabase() *gorm.DB {
 		log.Fatal("cannot connect to the database", err)
 	}
 	DB = db
-	RegisterApps(db)
 	return DB
 }
 
