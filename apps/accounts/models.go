@@ -17,8 +17,8 @@ type User struct {
 	Email         string  `gorm:"column:email,unique_index"`
 	Bio           string  `gorm:"column:bio;size:1024"`
 	Image         *string `gorm:"column:image"`
-	EmailVerified bool    `gorm:"column:email_verified"`
-	IsActive      bool    `gorm:"column:is_active"`
+	EmailVerified bool    `gorm:"column:email_verified,default:false"`
+	IsActive      bool    `gorm:"column:is_active,default:false"`
 }
 
 func (u *User) SetPassword(password string) error {
