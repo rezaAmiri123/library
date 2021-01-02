@@ -15,24 +15,24 @@ type Database struct {
 	*gorm.DB
 }
 
-func RegisterApps(){
-	accounts.AutoMigrate()
+func RegisterApps(db *gorm.DB){
+	accounts.AutoMigrate(db)
 }
 // Opening a database and save the reference to `Database` struct.
 func InitDatabase() *gorm.DB {
 	DBULR := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		os.Getenv("db_name"),
 		os.Getenv("db_user"),
 		os.Getenv("db_password"),
 		os.Getenv("db_host"),
 		os.Getenv("db_port"),
+		os.Getenv("db_name"),
 	)
 	db, err := gorm.Open("mysql", DBULR)
 	if err != nil {
 		log.Fatal("cannot connect to the database", err)
 	}
 	DB = db
-	RegisterApps()
+	RegisterApps(db)
 	return DB
 }
 

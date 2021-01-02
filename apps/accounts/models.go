@@ -2,11 +2,9 @@ package accounts
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/rezaAmiri123/library/conf"
 )
 
-func AutoMigrate() {
-	db := conf.GetDB()
+func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&User{})
 }
 type User struct {
