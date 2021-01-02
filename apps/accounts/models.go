@@ -1,7 +1,14 @@
 package accounts
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"github.com/rezaAmiri123/library/conf"
+)
 
+func AutoMigrate() {
+	db := conf.GetDB()
+	db.AutoMigrate(&User{})
+}
 type User struct {
 	gorm.Model
 	Username      string  `gorm:"column:username;unique_index"`
