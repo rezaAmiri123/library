@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/jinzhu/gorm"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/rezaAmiri123/library/apps/accounts"
 	"github.com/rezaAmiri123/library/conf"
 	"log"
 )
 
-func RegisterApps(db *gorm.DB){
-	accounts.AutoMigrate(db)
+func RegisterApps(rg *gin.RouterGroup){
+	accounts.Register(rg)
 }
 func main()  {
 	err := godotenv.Load()
@@ -17,6 +17,9 @@ func main()  {
 		log.Fatal("Error loading .env file")
 	}
 	db := conf.InitDatabase()
-	RegisterApps(db)
 	defer db.Close()
+	router := gin.Default()
+	v1 := router.Group("/api")
+	RegisterApps(v1)
+	router.Run()
 }
