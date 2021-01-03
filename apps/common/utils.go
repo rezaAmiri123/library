@@ -2,9 +2,12 @@ package common
 
 import (
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"github.com/rezaAmiri123/library/conf"
+	"time"
 )
 
 func Bind(ctx *gin.Context, obj interface{}) error {
@@ -44,14 +47,12 @@ func NewValidatorError(err error) CommonError {
 	return res
 }
 
-type BaseValidator struct {}
-
-//func Bind(ctx *gin.Context, obj interface{}) error {
-//	err := Bind(ctx, obj)
-//	bind := binding.Default(ctx.Request.Method, ctx.ContentType())
-//	return ctx.ShouldBindWith(obj, bind)
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
+func GetToken(id uint) string {
+	jwtToken := jwt.New(jwt.GetSigningMethod("HS256"))
+	jwtToken.Claims = jwt.MapClaims{
+		"id": id,
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
+	}
+	token, _ := jwtToken.SignedString([]byte(conf.NBSecretPassword))
+	return token
+}

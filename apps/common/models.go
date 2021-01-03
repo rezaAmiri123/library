@@ -4,9 +4,9 @@ import (
 	"github.com/rezaAmiri123/library/conf"
 )
 
-func FindObject(model *interface{}, condition interface{}) error {
+func FindObject(object, condition interface{}) error {
 	db := conf.GetDB()
-	return db.Where(condition).First(model).Error
+	return db.Where(condition).First(object).Error
 }
 
 func SaveObject(data interface{}) error {

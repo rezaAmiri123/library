@@ -14,6 +14,7 @@ func Register(rg *gin.RouterGroup){
 }
 func UserAnonRouter(rg *gin.RouterGroup) {
 	rg.POST("/register", UserCreate)
+	rg.POST("/login", UserLogin)
 }
 
 func UserCreate(ctx *gin.Context) {
@@ -32,4 +33,22 @@ func UserCreate(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusCreated, gin.H{"user": uv})
+}
+
+func UserLogin(ctx *gin.Context) {
+	lv := NewLoginValidator()
+	if err:= ctx.ShouldBind(&lv); err!=nil {
+		ctx.JSON(http.StatusNotFound, common.NewError("detail", err))
+		return
+	}
+	var u User
+	if err := common.FindObject(&u, User{Email: lv.Email}); err != nil {
+		ctx.JSON(http.StatusNotFound, common.NewError("detail", err))
+		return
+	}
+	if err := u.CheckPassword(lv.Password); err != nil {
+		ctx.JSON(http.StatusNotFound, common.NewError("detail", err))
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"token": common.GetToken(u.ID)})
 }
