@@ -1,17 +1,16 @@
-package common
+package accounts
 
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gin-gonic/gin"
-	"github.com/rezaAmiri123/library/apps/accounts"
 	"github.com/rezaAmiri123/library/conf"
 	"net/http"
 	"strings"
 )
 
 func UpdateContextUser(ctx *gin.Context, uid uint) {
-	var u accounts.User
+	var u User
 	if uid != 0 {
 		db := conf.GetDB()
 		db.First(&u, uid)
@@ -64,3 +63,4 @@ func AuthMiddleware(auto401 bool) gin.HandlerFunc {
 		}
 	}
 }
+

@@ -7,14 +7,16 @@ import (
 	"net/http"
 )
 
-func Register(rg *gin.RouterGroup){
+func Register(rg *gin.RouterGroup) {
 	db := conf.GetDB()
 	AutoMigrate(db)
-	UserAnonRouter(rg.Group("/users"))
+	UserRouter(rg.Group("/users"))
+
 }
-func UserAnonRouter(rg *gin.RouterGroup) {
+func UserRouter(rg *gin.RouterGroup) {
 	rg.POST("/register", UserCreate)
 	rg.POST("/login", UserLogin)
+	rg.GET("/user", AuthMiddleware(true), UserRetrieve)
 }
 
 func UserCreate(ctx *gin.Context) {
@@ -24,7 +26,7 @@ func UserCreate(ctx *gin.Context) {
 		return
 	}
 	u, err := uv.Convert()
-	if err != nil{
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, common.NewValidatorError(err))
 		return
 	}
@@ -37,7 +39,7 @@ func UserCreate(ctx *gin.Context) {
 
 func UserLogin(ctx *gin.Context) {
 	lv := NewLoginValidator()
-	if err:= ctx.ShouldBind(&lv); err!=nil {
+	if err := ctx.ShouldBind(&lv); err != nil {
 		ctx.JSON(http.StatusNotFound, common.NewError("detail", err))
 		return
 	}
@@ -51,4 +53,10 @@ func UserLogin(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"token": common.GetToken(u.ID)})
+}
+
+func UserRetrieve(ctx *gin.Context) {
+	u := ctx.MustGet("user").(User)
+	var us UserSerializer
+	ctx.JSON(http.StatusOK, gin.H{"user": us.Response(u)})
 }
