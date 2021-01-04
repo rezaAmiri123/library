@@ -25,16 +25,17 @@ func UserCreate(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
 		return
 	}
-	u, err := uv.Convert()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, common.NewValidatorError(err))
-		return
-	}
-	if err := common.SaveObject(u); err != nil {
+	var u User
+	if err := uv.GetData(&u); err != nil{
 		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
 		return
 	}
-	ctx.JSON(http.StatusCreated, gin.H{"user": uv})
+	if err := common.SaveObject(&u); err != nil {
+		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		return
+	}
+	var us  UserSerializer
+	ctx.JSON(http.StatusCreated, gin.H{"user": us.Response(u)})
 }
 
 func UserLogin(ctx *gin.Context) {

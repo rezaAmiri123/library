@@ -11,5 +11,5 @@ func FindObject(object, condition interface{}) error {
 
 func SaveObject(data interface{}) error {
 	db := conf.GetDB()
-	return db.Create(data).Error
+	return db.Save(data).Error
 }
