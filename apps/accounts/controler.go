@@ -17,6 +17,7 @@ func UserRouter(rg *gin.RouterGroup) {
 	rg.POST("/register", UserCreate)
 	rg.POST("/login", UserLogin)
 	rg.GET("/user", AuthMiddleware(true), UserRetrieve)
+	rg.PUT("/user", AuthMiddleware(true), UserUpdate)
 }
 
 func UserCreate(ctx *gin.Context) {
@@ -26,7 +27,7 @@ func UserCreate(ctx *gin.Context) {
 		return
 	}
 	var u User
-	if err := uv.GetData(&u); err != nil{
+	if err := uv.SetData(&u); err != nil{
 		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
 		return
 	}
@@ -60,4 +61,23 @@ func UserRetrieve(ctx *gin.Context) {
 	u := ctx.MustGet("user").(User)
 	var us UserSerializer
 	ctx.JSON(http.StatusOK, gin.H{"user": us.Response(u)})
+}
+
+func UserUpdate(ctx *gin.Context){
+	u := ctx.MustGet("user").(User)
+	var uv UserValidator
+	if err := ctx.ShouldBind(&uv); err != nil {
+		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		return
+	}
+	if err := uv.SetData(&u); err != nil{
+		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		return
+	}
+	if err := common.SaveObject(&u); err != nil {
+		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		return
+	}
+	var us  UserSerializer
+	ctx.JSON(http.StatusCreated, gin.H{"user": us.Response(u)})
 }
