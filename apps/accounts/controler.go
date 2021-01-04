@@ -20,7 +20,7 @@ func UserRouter(rg *gin.RouterGroup) {
 }
 
 func UserCreate(ctx *gin.Context) {
-	uv := NewUserValidator()
+	var uv UserValidator
 	if err := ctx.ShouldBind(&uv); err != nil {
 		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
 		return
@@ -39,7 +39,7 @@ func UserCreate(ctx *gin.Context) {
 }
 
 func UserLogin(ctx *gin.Context) {
-	lv := NewLoginValidator()
+	var lv LoginValidator
 	if err := ctx.ShouldBind(&lv); err != nil {
 		ctx.JSON(http.StatusNotFound, common.NewError("detail", err))
 		return

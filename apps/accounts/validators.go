@@ -26,16 +26,8 @@ func (uv *UserValidator) GetData(u *User) error {
 	return nil
 }
 
-func NewUserValidator() UserValidator {
-	uv := UserValidator{}
-	return uv
-}
 
 type LoginValidator struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required,min=8,max=255"`
-}
-
-func NewLoginValidator () LoginValidator {
-	return LoginValidator{}
 }
