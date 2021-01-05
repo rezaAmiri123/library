@@ -53,7 +53,7 @@ func GetToken(id uint) string {
 		"id": id,
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	}
-	token, _ := jwtToken.SignedString([]byte(conf.NBSecretPassword))
+	token, _ := jwtToken.SignedString([]byte(conf.SecretKey))
 	return token
 }
 

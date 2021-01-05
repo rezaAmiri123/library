@@ -13,8 +13,7 @@ var DB *gorm.DB
 type Database struct {
 	*gorm.DB
 }
-const NBRandomPassword = "A String Very Very Very Niubilty!!@##$!@#4"
-const NBSecretPassword = "A String Very Very Very Strong!!@##$!@#$"
+
 // Opening a database and save the reference to `Database` struct.
 func InitDatabase() *gorm.DB {
 	DBULR := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
@@ -36,3 +35,5 @@ func InitDatabase() *gorm.DB {
 func GetDB() *gorm.DB {
 	return DB
 }
+
+var SecretKey = os.Getenv("SecretKey")

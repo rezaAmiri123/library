@@ -41,7 +41,7 @@ var Auth2Extractor = &request.MultiExtractor{
 }
 
 func GetByteSecretKey(token *jwt.Token) (interface{}, error) {
-	bsp := []byte(conf.NBSecretPassword)
+	bsp := []byte(conf.SecretKey)
 	return bsp, nil
 }
 
