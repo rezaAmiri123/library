@@ -22,6 +22,7 @@ func UserRouter(rg *gin.RouterGroup) {
 }
 func ProfileRouter(rg *gin.RouterGroup) {
 	rg.GET("/:username", ProfileRetrieve)
+	rg.POST("/:username/follow", ProfileFollow)
 }
 
 func UserCreate(ctx *gin.Context) {
@@ -62,13 +63,13 @@ func UserLogin(ctx *gin.Context) {
 }
 
 func UserRetrieve(ctx *gin.Context) {
-	u := ctx.MustGet("user").(User)
+	u := GetUser(ctx)
 	var us UserSerializer
 	ctx.JSON(http.StatusOK, gin.H{"user": us.Response(u)})
 }
 
 func UserUpdate(ctx *gin.Context) {
-	u := ctx.MustGet("user").(User)
+	u := GetUser(ctx)
 	var uv UserValidator
 	if err := ctx.ShouldBind(&uv); err != nil {
 		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
@@ -95,4 +96,20 @@ func ProfileRetrieve(ctx *gin.Context) {
 	}
 	var ps ProfileSerializer
 	ctx.JSON(http.StatusCreated, gin.H{"user": ps.Response(u)})
+}
+
+func ProfileFollow(ctx *gin.Context) {
+	username := ctx.Param("username")
+	var ou User
+	if err := common.FindObject(&ou, User{Username: username}); err != nil {
+		ctx.JSON(http.StatusNotFound, common.ErrorResponse(err))
+		return
+	}
+	u := GetUser(ctx)
+	if err := u.Follow(ou); err != nil {
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
+		return
+	}
+	var ps ProfileSerializer
+	ctx.JSON(http.StatusCreated, gin.H{"user": ps.Response(ou)})
 }
