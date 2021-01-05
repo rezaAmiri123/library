@@ -56,3 +56,7 @@ func GetToken(id uint) string {
 	token, _ := jwtToken.SignedString([]byte(conf.NBSecretPassword))
 	return token
 }
+
+func ErrorResponse(err error) gin.H {
+	return gin.H{"detail": err.Error()}
+}

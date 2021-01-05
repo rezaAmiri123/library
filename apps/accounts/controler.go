@@ -27,16 +27,16 @@ func ProfileRouter(rg *gin.RouterGroup) {
 func UserCreate(ctx *gin.Context) {
 	var uv UserValidator
 	if err := ctx.ShouldBind(&uv); err != nil {
-		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
 		return
 	}
 	var u User
 	if err := uv.SetData(&u); err != nil {
-		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
 		return
 	}
 	if err := common.SaveObject(&u); err != nil {
-		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
 		return
 	}
 	var us UserSerializer
@@ -46,16 +46,16 @@ func UserCreate(ctx *gin.Context) {
 func UserLogin(ctx *gin.Context) {
 	var lv LoginValidator
 	if err := ctx.ShouldBind(&lv); err != nil {
-		ctx.JSON(http.StatusNotFound, common.NewError("detail", err))
+		ctx.JSON(http.StatusNotFound, common.ErrorResponse(err))
 		return
 	}
 	var u User
 	if err := common.FindObject(&u, User{Email: lv.Email}); err != nil {
-		ctx.JSON(http.StatusNotFound, common.NewError("detail", err))
+		ctx.JSON(http.StatusNotFound, common.ErrorResponse(err))
 		return
 	}
 	if err := u.CheckPassword(lv.Password); err != nil {
-		ctx.JSON(http.StatusNotFound, common.NewError("detail", err))
+		ctx.JSON(http.StatusNotFound, common.ErrorResponse(err))
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"token": common.GetToken(u.ID)})
@@ -71,15 +71,15 @@ func UserUpdate(ctx *gin.Context) {
 	u := ctx.MustGet("user").(User)
 	var uv UserValidator
 	if err := ctx.ShouldBind(&uv); err != nil {
-		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
 		return
 	}
 	if err := uv.SetData(&u); err != nil {
-		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
 		return
 	}
 	if err := common.SaveObject(&u); err != nil {
-		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
 		return
 	}
 	var us UserSerializer
@@ -90,7 +90,7 @@ func ProfileRetrieve(ctx *gin.Context) {
 	username := ctx.Param("username")
 	var u User
 	if err := common.FindObject(&u, User{Username: username}); err != nil {
-		ctx.JSON(http.StatusBadRequest, common.NewError("detail", err))
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
 		return
 	}
 	var ps ProfileSerializer
