@@ -14,8 +14,14 @@ type Database struct {
 	*gorm.DB
 }
 
-// Opening a database and save the reference to `Database` struct.
-func InitDatabase() *gorm.DB {
+// Using this function to get a connection, you can create your connection pool here.
+func GetDB() *gorm.DB {
+	return DB
+}
+
+var SecretKey string
+func Init() {
+	SecretKey = os.Getenv("SecretKey")
 	DBULR := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		os.Getenv("db_user"),
 		os.Getenv("db_password"),
@@ -28,12 +34,4 @@ func InitDatabase() *gorm.DB {
 		log.Fatal("cannot connect to the database", err)
 	}
 	DB = db
-	return DB
 }
-
-// Using this function to get a connection, you can create your connection pool here.
-func GetDB() *gorm.DB {
-	return DB
-}
-
-var SecretKey = os.Getenv("SecretKey")
