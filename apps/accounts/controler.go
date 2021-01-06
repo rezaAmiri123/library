@@ -23,6 +23,7 @@ func UserRouter(rg *gin.RouterGroup) {
 func ProfileRouter(rg *gin.RouterGroup) {
 	rg.GET("/:username", ProfileRetrieve)
 	rg.POST("/:username/follow", ProfileFollow)
+	rg.DELETE("/:username/follow", ProfileUnFollow)
 }
 
 func UserCreate(ctx *gin.Context) {
@@ -95,7 +96,7 @@ func ProfileRetrieve(ctx *gin.Context) {
 		return
 	}
 	var ps ProfileSerializer
-	ctx.JSON(http.StatusCreated, gin.H{"user": ps.Response(u)})
+	ctx.JSON(http.StatusCreated, gin.H{"profile": ps.Response(u)})
 }
 
 func ProfileFollow(ctx *gin.Context) {
@@ -111,5 +112,21 @@ func ProfileFollow(ctx *gin.Context) {
 		return
 	}
 	var ps ProfileSerializer
-	ctx.JSON(http.StatusCreated, gin.H{"user": ps.Response(ou)})
+	ctx.JSON(http.StatusCreated, gin.H{"profile": ps.Response(ou)})
+}
+
+func ProfileUnFollow(ctx *gin.Context) {
+	username := ctx.Param("username")
+	var ou User
+	if err := common.FindObject(&ou, User{Username: username}); err != nil {
+		ctx.JSON(http.StatusNotFound, common.ErrorResponse(err))
+		return
+	}
+	u := GetUser(ctx)
+	if err := u.UnFollow(ou); err != nil {
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
+		return
+	}
+	var ps ProfileSerializer
+	ctx.JSON(http.StatusCreated, gin.H{"profile": ps.Response(ou)})
 }
