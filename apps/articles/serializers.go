@@ -12,7 +12,7 @@ type ArticleSerializer struct {
 	UpdatedAt   string `json:"updated_at"`
 }
 
-func (as ArticleSerializer) Response(a Article) ArticleSerializer {
+func (as *ArticleSerializer) Response(a *Article) *ArticleSerializer {
 	as.ID = a.ID
 	as.Title = a.Title
 	as.Slug = a.Slug
@@ -22,4 +22,3 @@ func (as ArticleSerializer) Response(a Article) ArticleSerializer {
 	as.UpdatedAt = a.UpdatedAt.UTC().Format(conf.UTCFormat)
 	return as
 }
-

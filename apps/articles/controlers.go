@@ -16,6 +16,8 @@ func Register(rg *gin.RouterGroup) {
 func ArticleRouter(rg *gin.RouterGroup) {
 	rg.POST("/article", ArticleCreate)
 	rg.DELETE("/article/:slug", ArticleDelete)
+	rg.POST("/article/:slug/favorite", ArticleFavorite)
+	rg.DELETE("/article/:slug/favorite", ArticleUnFavorite)
 }
 
 func ArticleCreate(ctx *gin.Context) {
@@ -35,7 +37,7 @@ func ArticleCreate(ctx *gin.Context) {
 		return
 	}
 	var as ArticleSerializer
-	ctx.JSON(http.StatusCreated, gin.H{"article": as.Response(a)})
+	ctx.JSON(http.StatusCreated, gin.H{"article": as.Response(&a)})
 }
 
 func ArticleDelete(ctx *gin.Context) {
@@ -46,4 +48,36 @@ func ArticleDelete(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusNoContent, gin.H{})
+}
+
+func ArticleFavorite(ctx *gin.Context) {
+	u := accounts.GetUser(ctx)
+	slug := ctx.Param("slug")
+	var a Article
+	if err := common.FindObject(&a, &Article{Slug: slug}); err != nil {
+		ctx.JSON(http.StatusNotFound, common.ErrorResponse(err))
+		return
+	}
+	if err := a.FavoriteBy(&u); err != nil {
+		ctx.JSON(http.StatusNotFound, common.ErrorResponse(err))
+		return
+	}
+	var as ArticleSerializer
+	ctx.JSON(http.StatusCreated, gin.H{"article": as.Response(&a)})
+}
+
+func ArticleUnFavorite(ctx *gin.Context) {
+	u := accounts.GetUser(ctx)
+	slug := ctx.Param("slug")
+	var a Article
+	if err := common.FindObject(&a, &Article{Slug: slug}); err != nil {
+		ctx.JSON(http.StatusNotFound, common.ErrorResponse(err))
+		return
+	}
+	if err := a.UnFavoriteBy(&u); err != nil {
+		ctx.JSON(http.StatusNotFound, common.ErrorResponse(err))
+		return
+	}
+	var as ArticleSerializer
+	ctx.JSON(http.StatusNoContent, gin.H{"article": as.Response(&a)})
 }

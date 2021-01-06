@@ -3,6 +3,7 @@ package articles
 import (
 	"github.com/jinzhu/gorm"
 	"github.com/rezaAmiri123/library/apps/accounts"
+	"github.com/rezaAmiri123/library/conf"
 )
 
 func AutoMigrate(db *gorm.DB) {
@@ -26,4 +27,23 @@ type Favorite struct {
 	UserID    uint
 	Article   Article
 	ArticleId uint
+}
+
+func (a *Article) FavoriteBy(u *accounts.User) error {
+	db := conf.GetDB()
+	var f Favorite
+	err := db.FirstOrCreate(&f, Favorite{
+		UserID:    u.ID,
+		ArticleId: a.ID,
+	}).Error
+	return err
+}
+
+func (a *Article) UnFavoriteBy(u *accounts.User) error {
+	db := conf.GetDB()
+	err := db.Where(Favorite{
+		UserID:    u.ID,
+		ArticleId: a.ID,
+	}).Delete(Favorite{}).Error
+	return err
 }
