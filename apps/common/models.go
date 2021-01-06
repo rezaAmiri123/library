@@ -13,3 +13,8 @@ func SaveObject(data interface{}) error {
 	db := conf.GetDB()
 	return db.Save(data).Error
 }
+
+func DeleteObject(model, con interface{}) error {
+	db := conf.GetDB()
+	return db.Where(con).Delete(model).Error
+}

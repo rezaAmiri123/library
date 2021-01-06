@@ -15,6 +15,7 @@ func Register(rg *gin.RouterGroup) {
 }
 func ArticleRouter(rg *gin.RouterGroup) {
 	rg.POST("/article", ArticleCreate)
+	rg.DELETE("/article/:slug", ArticleDelete)
 }
 
 func ArticleCreate(ctx *gin.Context) {
@@ -35,4 +36,14 @@ func ArticleCreate(ctx *gin.Context) {
 	}
 	var as ArticleSerializer
 	ctx.JSON(http.StatusCreated, gin.H{"article": as.Response(a)})
+}
+
+func ArticleDelete(ctx *gin.Context) {
+	u := accounts.GetUser(ctx)
+	slug := ctx.Param("slug")
+	if err := common.DeleteObject(Article{}, &Article{Slug: slug, AuthorID: u.ID}); err != nil {
+		ctx.JSON(http.StatusBadRequest, common.ErrorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusNoContent, gin.H{})
 }
