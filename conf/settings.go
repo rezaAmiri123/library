@@ -18,7 +18,7 @@ type Database struct {
 func GetDB() *gorm.DB {
 	return DB
 }
-
+const UTCFormat = "2006-01-02T15:04:05.999Z"
 var SecretKey string
 func Init() {
 	SecretKey = os.Getenv("SecretKey")
