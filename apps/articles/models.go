@@ -7,6 +7,7 @@ import (
 
 func AutoMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Article{})
+	db.AutoMigrate(&Favorite{})
 }
 
 type Article struct {
@@ -17,4 +18,12 @@ type Article struct {
 	Body        string `gorm:"size:2048"`
 	Author      accounts.User
 	AuthorID    uint
+}
+
+type Favorite struct {
+	gorm.Model
+	User      accounts.User
+	UserID    uint
+	Article   Article
+	ArticleId uint
 }
